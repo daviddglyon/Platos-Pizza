@@ -161,12 +161,17 @@ elif selected_page == "Chiffres d'affaires":
                     df_ca_par_cat_pizza = pd.read_sql_query(text(query.read()), connection)
                     st.write("CA par la catégoreie des pizzas")
                     st.dataframe(df_ca_par_cat_pizza)
+
             cols = st.columns(1, gap="medium", width=900)
             with cols[0]:
                 with open('sql/kpis/kpi11.sql', 'r') as query: 
                     df_ca_mois = pd.read_sql_query(text(query.read()), connection)
                     st.write("CA par les types de pizzas")
-                    st.line_chart(df_ca_mois)
+                    month_order = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ]
+                    df_ca_mois["mois"] = pd.Categorical(df_ca_mois["mois"], categories=month_order, ordered=True )
+                    df_ca_mois = df_ca_mois.sort_values("mois")
+                    st.line_chart(df_ca_mois, x="mois", y="prix_achat")
+
             cols = st.columns(1, gap="medium", width=500)
             with cols[0]:
                 with open('sql/kpis/kpi12.sql', 'r') as query: 

@@ -1,5 +1,6 @@
 -- KPI 11: ca par mois
-SELECT month(date) as mois, SUM(quantity * price) AS prix_achat
+SELECT MONTHNAME(date) as mois, ROUND(SUM(quantity * price),2) AS prix_achat
 FROM jview 
-GROUP BY month(date)
-ORDER BY mois;
+GROUP BY YEAR(date), MONTH(date), mois
+ORDER BY YEAR(date), MONTH(date);
+
