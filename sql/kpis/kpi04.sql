@@ -1,5 +1,7 @@
 -- KPI 4: nombre commandes par mois
-SELECT MONTH(date) as cmd_mois, COUNT(*) nobre_par_mois
-FROM   orders
-GROUP BY cmd_mois
-ORDER BY cmd_mois ;
+SELECT 
+    MONTHNAME(date) AS cmd_mois, 
+    COUNT(*) AS nombre_par_mois
+FROM orders
+GROUP BY YEAR(date), MONTH(date), cmd_mois
+ORDER BY YEAR(date), MONTH(date);

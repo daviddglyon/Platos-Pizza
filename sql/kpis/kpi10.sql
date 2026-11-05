@@ -1,5 +1,8 @@
--- KPI 10: ca par la catégorie de pizza
-SELECT category, SUM(quantity * price) AS prix_achat
-FROM jview 
-GROUP BY category
-ORDER BY prix_achat DESC;
+-- kpi 15: combien par jour moyenne
+
+SELECT ROUND(avg(nbr_par_date),0) cmd_moyenne_jour
+FROM (
+		SELECT COUNT(*) nbr_par_date 
+		FROM orders
+		GROUP BY  date
+	) as par_date
