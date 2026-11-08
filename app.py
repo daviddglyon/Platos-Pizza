@@ -46,13 +46,6 @@ with st.sidebar:
             "Analyse Supplémentaire",
             "Autres"
         ],
-        icons=[
-            "speedometer2",   # Vue d'ensemble
-            "car-front-fill", # Véhicules
-            "cloud-rain-fill",# Conditions environnementales
-            "signpost-split-fill", # Type de route
-            "people-fill",    # Profil usager
-        ],
         default_index=0,
     )
 
@@ -74,15 +67,17 @@ if selected_page == "Vue d'ensemble":
                 with open('sql/kpis/kpi01.sql', 'r') as query: 
                     df_nbrs = pd.read_sql_query(text(query.read()), connection)
                     st.metric("Commandes",  f"{df_nbrs.iloc[0, 0]}", format=None, delta="Nobre" )     
+
             cols = st.columns(2, gap="medium", width=380)           
             with cols[0]:
                 with open('sql/kpis/kpi02.sql', 'r') as query: 
                     df_prd = pd.read_sql_query(text(query.read()), connection)
-                    st.metric("Début: ",  f"{df_prd.iloc[0, 0]}", format=None , delta="Date" )       
+                    st.metric("La date Début: ",  f"{df_prd.iloc[0, 0]}", format=None , delta="Date" )       
             with cols[1]:
                 with open('sql/kpis/kpi02.sql', 'r') as query: 
                     df_prd = pd.read_sql_query(text(query.read()), connection)
-                    st.metric("Fin: ",  f"{df_prd.iloc[0, 1]}", format=None , delta="Date" )   
+                    st.metric("La date Fin: ",  f"{df_prd.iloc[0, 1]}", format=None , delta="Date" )   
+                    
             cols = st.columns(1, gap="medium", width=190)
             with cols[0]:
                 with open('sql/kpis/kpi14.sql', 'r') as query: 
@@ -94,11 +89,42 @@ if selected_page == "Vue d'ensemble":
                     df_nbrs = pd.read_sql_query(text(query.read()), connection)
                     st.metric("Commande Jour",  f"{ df_nbrs.iloc[0, 0] } ", format=None, delta="Nombre Moyenne" )   
 
+        with st.container(horizontal=True, gap="medium"):
+
+            # Ligne 2 - metrics
+            cols = st.columns(1, gap="medium", width=120)
+            with cols[0]:
+                with open('sql/kpis/kpi16.sql', 'r') as query: 
+                    df_nbrs = pd.read_sql_query(text(query.read()), connection)
+                    st.metric("Articles",  f"{df_nbrs.iloc[0, 0]}", format=None, delta="Nobre" )     
+
+            cols = st.columns(2, gap="medium", width=380)           
+            with cols[0]:
+                with open('sql/kpis/kpi17.sql', 'r') as query: 
+                    df_prdmin = pd.read_sql_query(text(query.read()), connection)
+                    st.metric("Date Pire Vente: ",  f"{df_prdmin.iloc[0, 0]}", format=None , delta=f"{df_prdmin.iloc[0,1]}" )       
+            with cols[1]:
+                with open('sql/kpis/kpi18.sql', 'r') as query: 
+                    df_prdmax = pd.read_sql_query(text(query.read()), connection)
+                    st.metric("Date Meilleur Vente: ",  f"{df_prdmax.iloc[0, 0]}", format=None ,  delta=f"{df_prdmax.iloc[0,1]}" )   
+                    
+            cols = st.columns(1, gap="medium", width=190)
+            with cols[0]:
+                with open('sql/kpis/kpi12.sql', 'r') as query: 
+                    df_nbrs = pd.read_sql_query(text(query.read()), connection)
+                    st.metric("Prix Pizza min/max",  f"{df_nbrs.iloc[0, 0]:,.2f}/{df_nbrs.iloc[0, 1]:,.2f} ", format=None, delta="Montant" )    
+            cols = st.columns(1, gap="medium", width=190)
+            with cols[0]:
+                with open('sql/kpis/kpi12.sql', 'r') as query: 
+                    df_nbrs = pd.read_sql_query(text(query.read()), connection)
+                    st.metric("Prix moyenne",  f"{ df_nbrs.iloc[0, 2] } ", format=None, delta="Montant" )   
+
+
         st.divider()
 
         with st.container(horizontal=True, gap="medium"):
 
-            # Ligne 2 - Nombre Commandes par les Dattes
+            # Ligne 3 - Nombre Commandes par les Dattes
             cols = st.columns(1, gap="medium", width=900)
             with cols[0]:
                 with open('sql/kpis/kpi03.sql', 'r') as query: 
@@ -106,7 +132,7 @@ if selected_page == "Vue d'ensemble":
                     st.write("Nombre Commandes par les Dattes")
                     st.line_chart(df_nbrs_par_dates, x="date", y="nombre_par_date", use_container_width=True)
 
-            # Ligne 3 - Nombre Commandes par les Mois
+            # Ligne 4 - Nombre Commandes par les Mois
             cols = st.columns(1, gap="medium", width=1000)
             with cols[0]:
                 with open('sql/kpis/kpi04.sql', 'r') as query: 
@@ -117,7 +143,7 @@ if selected_page == "Vue d'ensemble":
                     st.write("Nombre Commandes par les Mois")
                     st.line_chart(df_nbrs_par_mois, x="cmd_mois", y="nombre_par_mois")
 
-            # Ligne 4 - Nombre Commandes par les Heures de Travail et Nobre des commandes par les quantités commandées
+            # Ligne 5 - Nombre Commandes par les Heures de Travail et Nobre des commandes par les quantités commandées
             cols = st.columns(2, gap="medium", width=800)
             with cols[0]:
                 with open('sql/kpis/kpi05.sql', 'r') as query: 
@@ -142,7 +168,9 @@ if selected_page == "Vue d'ensemble":
 
 elif selected_page == "Chiffres d'affaires":
     st.title(f"€💶  Chiffres d'affaires")
+
     with engine.connect() as connection:
+
         with st.container(horizontal=True, gap="medium"):
             cols = st.columns(1, gap="medium", width=900)
             with cols[0]:
@@ -150,17 +178,50 @@ elif selected_page == "Chiffres d'affaires":
                     df_ca_pizza = pd.read_sql_query(text(query.read()), connection)
                     st.altair_chart(alt.Chart(df_ca_pizza).mark_bar().encode(x=alt.X("pizza", sort=None), y="prix_achat"))
 
-            cols = st.columns(2, gap="medium", width=900)
+            cols = st.columns(1, gap="medium", width=900)
             with cols[0]:
                 with open('sql/kpis/kpi08.sql', 'r') as query: 
                     df_ca_taille_pizza = pd.read_sql_query(text(query.read()), connection)
-                    st.write("CA par la taille des pizzas")
-                    st.dataframe(df_ca_taille_pizza)
-            with cols[1]:
+                    # Création du diagramme en barres horizontales avec Plotly
+                    fig = px.bar(
+                        df_ca_taille_pizza,
+                        x="prix_achat",
+                        y="size",
+                        orientation="h",
+                        text="prix_achat",
+                        color="prix_achat",
+                        title="CA par la taille des pizzas",
+                        labels={"prix achat": "prix achat (montant)", "Taille": "Taille"},
+                    )
+
+                    fig.update_layout(yaxis={"categoryorder": "array", "categoryarray": ["XXL", "XL", "S", "M", "L"]})
+                    fig.update_traces(texttemplate="%{text:,.2f}", textposition="auto")
+                    fig.update_layout(margin=dict(l=20, r=20, t=50, b=20), height=400)
+
+                    # Affichage dans l'application Streamlit
+                    st.plotly_chart(fig, use_container_width=True)
+                    with st.expander("Voir les données brutes"):
+                        st.dataframe(df_ca_taille_pizza.style.format({"prix_achat": "{:,.2f}"}))
+
+            cols = st.columns(1, gap="medium", width=900)
+            with cols[0]:
                 with open('sql/kpis/kpi09.sql', 'r') as query: 
                     df_ca_par_cat_pizza = pd.read_sql_query(text(query.read()), connection)
-                    st.write("CA par la catégoreie des pizzas")
-                    st.dataframe(df_ca_par_cat_pizza)
+                    fig = px.bar(
+                        df_ca_par_cat_pizza,
+                        y="prix_achat",
+                        x="category",
+                        text="prix_achat",
+                        color="prix_achat",
+                    )     
+                    fig.update_layout(yaxis={"categoryorder": "array", "categoryarray": ["Classic", "Supreme", "Chicken", "Veggie"]})
+                    fig.update_traces(texttemplate="%{text:,.2f}", textposition="auto")
+
+                    st.plotly_chart(fig, use_container_width=True)
+
+                    with st.expander(" donnés brut"):
+                        st.dataframe(df_ca_par_cat_pizza)              
+
 
             cols = st.columns(1, gap="medium", width=900)
             with cols[0]:
@@ -181,7 +242,9 @@ elif selected_page == "Chiffres d'affaires":
 
 elif selected_page == "Analyse Supplémentaire":
     st.title("👥 Analyse Supplémentaire")
+
     with engine.connect() as connection:
+
         with st.container(horizontal=True, gap="medium"):
             cols = st.columns(1, gap="medium", width=900)
             with cols[0]:

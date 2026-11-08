@@ -1,3 +1,3 @@
 -- KPI 14: ca total
-SELECT SUM(quantity * price) AS CA
+SELECT ROUND(SUM(quantity * price),2) AS CA
 FROM jview 
